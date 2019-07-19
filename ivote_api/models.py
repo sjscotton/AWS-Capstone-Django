@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
+import datetime
+
 
 # Create your models here.
 class Vote(models.Model):
@@ -37,3 +40,8 @@ class Voter(models.Model):
     last_voted = models.CharField(max_length=15, default='00')
     status_code = models.CharField(max_length=10, default='00')
 
+class Voting_Stats(models.Model):
+    county_code = models.CharField(max_length=10, default='00')
+    city = models.CharField(max_length=30, default='00')
+    voting_freq = ArrayField(models.IntegerField(), size=10,)
+    age_group = models.CharField(max_length=20, default='00')
