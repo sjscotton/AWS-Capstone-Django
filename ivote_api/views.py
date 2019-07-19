@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from ivote_api.models import Vote
 # Create your views here.
 def index(request):
-    votes = Votes.object.all()
+    votes = Vote.objects.all()
     data = {
       'Hello': 'Friend',
       "number of votes": len(votes)
