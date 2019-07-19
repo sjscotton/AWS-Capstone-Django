@@ -40,6 +40,31 @@ class Voter(models.Model):
     last_voted = models.CharField(max_length=15, default='00')
     status_code = models.CharField(max_length=10, default='00')
 
+    def get_age_group(self):
+        year = datetime.datetime.now().year
+        age = year - int(self.birthdate.split('/')[2])
+        if age < 25:
+            return '18-24'
+        elif age < 35:
+            return '25-34'
+        elif age < 45:
+            return '35-44'
+        elif age < 55:
+            return '45-54'
+        elif age < 65:
+            return '55-64'
+        elif age < 75:
+            return '65-74'
+        elif age < 85:
+            return '75-84'
+        else:
+            return '85+'
+
+    def get_address(self):
+
+        return f'{self.st_num} {self.st_pre_direction} {self.st_name} {self.st_type} {self.st_post_direction} {self.unit_type}{self.unit_num}, {self.city}, {self.state}, {self.zip_code}'
+
+
 class Voting_Stats(models.Model):
     county_code = models.CharField(max_length=10, default='00')
     city = models.CharField(max_length=30, default='00')
