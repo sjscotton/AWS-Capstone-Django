@@ -5,11 +5,11 @@ from ivote_api.models import Vote, Voter
 def index(request):
     votes = Vote.objects.all()
     voters = Voter.objects.all()
-    # print(voters)
+    print(voters)
     data = {
       'Hello': 'Friend',
       "number of votes": len(votes),
-      # "num voter": len(voters),
+      "num voter": len(voters),
 
     }
 
