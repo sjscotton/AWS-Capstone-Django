@@ -3,3 +3,5 @@ env/
 .DS_Store
 ivote_api/__pycache__/
 ivote/__pycache__/
+ivote/migrations/*
+db.sqlite3
