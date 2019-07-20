@@ -6,3 +6,5 @@ __pycache__/
 migrations/
 /db.sqlite3
 settings.py
+voter_data/
+setup/
