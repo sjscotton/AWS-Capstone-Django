@@ -69,3 +69,35 @@ def get_votes(request):
     }
 
     return JsonResponse(data, status=200)
+
+
+def get_stats(request):
+
+    # age_group = request.GET.get('age_group', None)
+    city = request.GET.get('city', None)
+    county_code = request.GET.get('county', None)
+
+    # if age_group and city:
+    #     rows = Voting_Stats.objects.filter(age_group=age_group, city=city)
+    # elif age_group and county_code:
+    #     rows = Voting_Stats.objects.filter(
+    #         age_group=age_group, county_code=county_code)
+    if city:
+        rows = Voting_Stats.objects.filter(city=city)
+    elif county_code:
+        rows = Voting_Stats.objects.filter(county_code=county_code)
+    else:
+        return JsonResponse({'message': "Must supply age_group, and city or county_code"}, status=400)
+    max_votes = Voting_Stats.get_max_votes(rows)
+    data = {}
+    data['county_code'] = rows[0].county_code
+    data['city'] = rows[0].city
+    for row in rows:
+        # data.append({'city': row.city, 'county_code': row.county_code, 'age_group': row.age_group,
+        #              'voting_freq': row.voting_freq})
+        # print("++++++++++++++++++++++++++++++")
+        # print(row.voting_freq)
+        # print(row.voting_freq[:max_votes + 1])
+        data[row.age_group] = row.voting_freq[:max_votes + 1]
+
+    return JsonResponse({'stats': data}, status=200)
