@@ -56,3 +56,16 @@ def get_voter(request):
         'age_group': person.get_age_group()
     }
     return JsonResponse(data, status=200)
+
+
+def get_votes(request):
+    voter_id = request.GET.get('state_voter_id', None)
+    if not voter_id:
+        return JsonResponse({'message': "Must supply state_voter_id"}, status=400)
+
+    votes = Vote.objects.filter(state_voter_id=voter_id)
+    data = {
+        'voting_days': [vote.election_date for vote in votes]
+    }
+
+    return JsonResponse(data, status=200)
