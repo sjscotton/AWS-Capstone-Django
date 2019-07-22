@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from ivote_api.models import Vote, Voter, Voting_Stats
+
+import requests
+import json
 # Create your views here.
 
 
@@ -101,3 +104,21 @@ def get_stats(request):
         data[row.age_group] = row.voting_freq[:max_votes + 1]
 
     return JsonResponse({'stats': data}, status=200)
+
+
+def get_reps(request):
+    address = request.GET.get('address', None)
+    if not address:
+        return JsonResponse({'message': "Must supply address"}, status=400)
+
+    """ Google Civic API call """
+
+    payload = {'key':,
+               'address': address}
+    url = 'https://www.googleapis.com/civicinfo/v2/representatives'
+    response = requests.get(url, params=payload)
+
+    reps = json.loads(response.text)
+    """Cached response  """
+
+    return JsonResponse({'reps': reps}, status=200)
