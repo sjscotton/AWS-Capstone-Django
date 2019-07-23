@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from ivote_api.models import Vote, Voter, Voting_Stats
-
+from ivote_api.models import Vote, Voter, Voting_Stats, Visitor
+from django.db import models
 import requests
 import json
 # Create your views here.
@@ -34,7 +34,10 @@ def get_voter(request):
 
     if voter_id:
         try:
-            person = Voter.objects.get(state_voter_id=voter_id)
+            person = Visitor.objects.get(state_voter_id=voter_id)
+            address = person.address
+            age_group = person.age_group
+
         except:
             return JsonResponse({'message': f'Record not found for voter ID: {voter_id}.'}, status=404)
 
@@ -45,18 +48,32 @@ def get_voter(request):
         try:
             person = Voter.objects.get(
                 f_name=first_name.upper(), l_name=last_name.upper(), birthdate=birthdate.replace('-', '/'))
+            address = person.get_address()
+            age_group = person.get_age_group()
         except:
             return JsonResponse({'message': f'Record not found for {first_name} {last_name}.'}, status=404)
+
+        if not person.user:
+            Visitor.objects.create(
+                f_name=person.f_name,
+                l_name=person.l_name,
+                state_voter_id=person.state_voter_id,
+                address=person.get_address(),
+                county_code=person.county_code,
+                city=person.city,
+                age_group=person.get_age_group(),
+                birthdate=person.birthdate)
+            person.user = True
+            person.save()
 
     data = {
         'first_name': person.f_name,
         'last_name': person.l_name,
-        "middle_name": person.m_name,
         'voter_id': person.state_voter_id,
-        'address': person.get_address(),
+        'address': address,
         'county_code': person.county_code,
         'city': person.city,
-        'age_group': person.get_age_group()
+        'age_group': age_group
     }
     return JsonResponse(data, status=200)
 
@@ -66,11 +83,34 @@ def get_votes(request):
     if not voter_id:
         return JsonResponse({'message': "Must supply state_voter_id"}, status=400)
 
-    votes = Vote.objects.filter(state_voter_id=voter_id)
+    returning_user = request.GET.get('returning_user', None)
+    remember_me = request.GET.get('remember_me', None)
+    print(voter_id, returning_user, remember_me)
+    votes = []
+    if returning_user == 'true':
+        print('returning user')
+        voter = Visitor.objects.get(state_voter_id=voter_id)
+        votes = voter.voting_history
+    else:
+        print('new user')
+        voting_history = Vote.objects.filter(state_voter_id=voter_id)
+        votes = [v.election_date for v in voting_history]
+    if remember_me == 'true':
+        print(remember_me)
+        print('remember me')
+        # voting_history = Vote_Date.objects.filter(state_voter_id=voter_id)
+        # votes = [vote.election_date for vote in voting_history]
+        print(votes)
+        voter = Visitor.objects.get(state_voter_id=voter_id)
+        print(voter.f_name)
+        print(voter.voting_history)
+        voter.voting_history.clear()
+        for vote in votes:
+            voter.voting_history.append(vote)
+        voter.save()
     data = {
-        'voting_days': [vote.election_date for vote in votes]
+        'voting_days': votes
     }
-
     return JsonResponse(data, status=200)
 
 
@@ -113,7 +153,7 @@ def get_reps(request):
 
     """ Google Civic API call """
 
-    payload = {'key':,
+    payload = {'key': '',
                'address': address}
     url = 'https://www.googleapis.com/civicinfo/v2/representatives'
     response = requests.get(url, params=payload)
