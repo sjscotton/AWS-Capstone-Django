@@ -10,6 +10,7 @@ class Vote(models.Model):
     county_code = models.CharField(max_length=10, default='00')
     election_date = models.CharField(max_length=15, default="00")
 
+
 class Voter(models.Model):
     state_voter_id = models.CharField(max_length=25, default='00')
     county_voter_id = models.CharField(max_length=25, default='00')
@@ -39,6 +40,7 @@ class Voter(models.Model):
     absentee_type = models.CharField(max_length=10, default='00')
     last_voted = models.CharField(max_length=15, default='00')
     status_code = models.CharField(max_length=10, default='00')
+    user = models.BooleanField(default=False)
 
     def get_age_group(self):
         year = datetime.datetime.now().year
@@ -87,3 +89,16 @@ class Voting_Stats(models.Model):
             else:
                 break
         return max_votes
+
+
+class Visitor(models.Model):
+    state_voter_id = models.CharField(max_length=25, default='00')
+    f_name = models.CharField(max_length=30, default='00')
+    l_name = models.CharField(max_length=30, default='00')
+    birthdate = models.CharField(max_length=15, default='00')
+    address = models.CharField(max_length=70, default='00')
+    city = models.CharField(max_length=30, default='00')
+    county_code = models.CharField(max_length=20, default='00')
+    age_group = models.CharField(max_length=20, default='00')
+    has_voting_history = models.BooleanField(default=False)
+    voting_history = ArrayField(models.CharField(max_length=20), default=list)
