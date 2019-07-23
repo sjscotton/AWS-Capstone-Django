@@ -10,15 +10,12 @@ import json
 def index(request):
     vote = Vote.objects.first()
     voter = Voter.objects.first()
-    print(vote)
-    print(voter)
-    # stats = Voting_Stats.objects.all()
-    # print(voters)
+
     data = {
         'Hello': 'Friend',
         "vote date": vote.election_date,
         "voter name": voter.f_name,
-        # "stats": len(stats)
+
 
     }
 
@@ -85,25 +82,15 @@ def get_votes(request):
 
     returning_user = request.GET.get('returning_user', None)
     remember_me = request.GET.get('remember_me', None)
-    print(voter_id, returning_user, remember_me)
     votes = []
     if returning_user == 'true':
-        print('returning user')
         voter = Visitor.objects.get(state_voter_id=voter_id)
         votes = voter.voting_history
     else:
-        print('new user')
         voting_history = Vote.objects.filter(state_voter_id=voter_id)
         votes = [v.election_date for v in voting_history]
     if remember_me == 'true':
-        print(remember_me)
-        print('remember me')
-        # voting_history = Vote_Date.objects.filter(state_voter_id=voter_id)
-        # votes = [vote.election_date for vote in voting_history]
-        print(votes)
         voter = Visitor.objects.get(state_voter_id=voter_id)
-        print(voter.f_name)
-        print(voter.voting_history)
         voter.voting_history.clear()
         for vote in votes:
             voter.voting_history.append(vote)
@@ -116,15 +103,9 @@ def get_votes(request):
 
 def get_stats(request):
 
-    # age_group = request.GET.get('age_group', None)
     city = request.GET.get('city', None)
     county_code = request.GET.get('county', None)
 
-    # if age_group and city:
-    #     rows = Voting_Stats.objects.filter(age_group=age_group, city=city)
-    # elif age_group and county_code:
-    #     rows = Voting_Stats.objects.filter(
-    #         age_group=age_group, county_code=county_code)
     if city:
         rows = Voting_Stats.objects.filter(city=city)
     elif county_code:
@@ -136,11 +117,6 @@ def get_stats(request):
     data['county_code'] = rows[0].county_code
     data['city'] = rows[0].city
     for row in rows:
-        # data.append({'city': row.city, 'county_code': row.county_code, 'age_group': row.age_group,
-        #              'voting_freq': row.voting_freq})
-        # print("++++++++++++++++++++++++++++++")
-        # print(row.voting_freq)
-        # print(row.voting_freq[:max_votes + 1])
         data[row.age_group] = row.voting_freq[:max_votes + 1]
 
     return JsonResponse({'stats': data}, status=200)
