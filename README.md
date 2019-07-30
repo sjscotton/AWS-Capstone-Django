@@ -1,6 +1,6 @@
 # AWS-Capstone-Django
 
-This is the backend Django project powering [Do I Vote?](http://capstone-react.s3-website-us-west-2.amazonaws.com) 
+This is the backend Django project powering [Do I Vote?](http://capstone-react.s3-website-us-west-2.amazonaws.com). It includes several endpoint APIs to get voter information and voting frequency.
 View the React frontend for this project [here](https://github.com/sjscotton/Capstone-iVote-React)
 
 ## Do I Vote
@@ -12,5 +12,9 @@ There will also be an option to share their streak on social media to encourage 
 
 ### Database 
 
-This project uses a Postgres database that would need to be configured seperatly. Any other SQL based Databases should also work as well
+This project uses a Postgres database that would need to be configured seperatly. Any other SQL based Databases should also work as well.
+
+### Data
+
+Data will need to be aquired from Washington state  [here](https://www.sos.wa.gov/elections/vrdb/vrdbfaq.aspx)
 
